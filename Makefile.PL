@@ -13,5 +13,5 @@ WriteMakefile(
     VERSION_FROM  => 'JA.pm',
     ABSTRACT_FROM => 'JA.pm',
     AUTHOR        => '<k@obuk.org>',
-	clean         => { FILES => "cover_db/ JA/ docs/" },
+	clean         => { FILES => "cover_db JA docs" },
     );

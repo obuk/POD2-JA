@@ -1,9 +1,7 @@
-POD2::JA version 0.15
+POD2::JA version 0.16
 =====================
 
-POD2::JA - Japanese translation of Perl core documentation.
-
-See 'perldoc POD2::JA' for more info.
+POD2::JA - uses perldoc -L JA
 
 
 INSTALLATION
@@ -16,10 +14,9 @@ To install this module type the following:
    make test
    make install
 
-DEPENDENCIES
-------------
 
 COPYRIGHT AND LICENCE
+---------------------
 
 Copyright (C) 2014 by KUBO Koichi
 
