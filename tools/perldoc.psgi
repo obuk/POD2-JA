@@ -27,6 +27,7 @@ BEGIN {  # Make a DEBUG constant very first thing...
 use utf8;
 use Encode;
 use Pod::Simple::HTML;
+use System::Command;
 
 my $app = sub {
 	my $env = shift;
@@ -46,7 +47,8 @@ my $app = sub {
 		DEBUG and warn "SERVER = $url_scheme://$host:$port\n";
 		$p->perldoc_url_prefix('');
 
-		# $p->man_url_prefix('https://www.obuk.org/man');
+		$p->man_url_prefix('https://www.obuk.org/man');
+		# $p->man_url_prefix("$url_scheme://$host/man");
 
 		$p->html_css($css);
 		$p->no_errata_section(1);
@@ -59,13 +61,20 @@ my $app = sub {
 		local $ENV{LANG} = undef;
 		local $ENV{LC_ALL} = undef;
 		local $ENV{LC_CTYPE} = "ja_JP.UTF-8";
-		open(my $fd, "-|", qw(perlfind -L JA -u), $path_info);
-		binmode $fd, ":encoding($ENV{LC_CTYPE})";
-		$p->parse_file($fd);
-		close $fd;
+		my $cmd = System::Command->new(qw(perlfind -L JA -u), $path_info);
+		my ($stdout, $stderr) = ($cmd->stdout, $cmd->stderr);
+		binmode $stdout, ":encoding($ENV{LC_CTYPE})";
+		my ($out, $err) = (join('', <$stdout>), join('', <$stderr>));
+		$out =~ /=encoding/ or $out = "=encoding utf8\n\n" . $out;
+		$p->parse_string_document($out);
 		[ 200,
-		  [ 'Content-Type' => 'text/html' ],
-		  [ $html ],
+		  $out ? (
+			  [ 'Content-Type' => 'text/html' ],
+			  [ $html ],
+		  ) : (
+			  [ 'Content-Type' => 'text/plain' ],
+			  [ $err || "No documentation found for '$path_info'" ],
+		  ),
 		];
 	}
 };
