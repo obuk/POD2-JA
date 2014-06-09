@@ -1,3 +1,7 @@
-Revision history for Perl extension PPQA::BugStat.
+Revision history for Perl extension POD2::JA.
 
-2014-06-07 - initial (thanks POD2::IT, perldoc.jp).
+Git Log:
+2014-06-07 - initial (thanks POD2::IT, perldoc.jp)
+2014-06-07 = TAG: 0.16
+2014-06-08 - adds perldoc server
+2014-06-09 - TAG: 0.16
