@@ -61,21 +61,19 @@ my $app = sub {
 		local $ENV{LANG} = undef;
 		local $ENV{LC_ALL} = undef;
 		local $ENV{LC_CTYPE} = "ja_JP.UTF-8";
-		my $cmd = System::Command->new(qw(perlfind -L JA -u), $path_info);
+		my $cmd = System::Command->new(qw(perlfind -L JA -u), $path_info || '-h');
 		my ($stdout, $stderr) = ($cmd->stdout, $cmd->stderr);
 		binmode $stdout, ":encoding($ENV{LC_CTYPE})";
 		my ($out, $err) = (join('', <$stdout>), join('', <$stderr>));
-		$out =~ /=encoding/ or $out = "=encoding utf8\n\n" . $out;
-		$p->parse_string_document($out);
-		[ 200,
-		  $out ? (
-			  [ 'Content-Type' => 'text/html' ],
-			  [ $html ],
-		  ) : (
-			  [ 'Content-Type' => 'text/plain' ],
-			  [ $err || "No documentation found for '$path_info'" ],
-		  ),
-		];
+		$cmd->close();
+		if ($cmd->exit == 0 && $out) {
+			$out =~ /=encoding/ or $out = "=encoding utf8\n\n" . $out;
+			$p->parse_string_document($out);
+			[ 200, [ 'Content-Type' => 'text/html' ], [ $html ], ];
+		} else {
+			$err ||= "No documentation found for '$path_info'";
+			[ 200, [ 'Content-Type' => 'text/plain' ], [ $err ], ];
+		}
 	}
 };
 
