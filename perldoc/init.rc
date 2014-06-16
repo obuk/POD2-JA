@@ -1,0 +1,78 @@
+#!/bin/bash
+#
+#  cd /etc/init.d
+
+HOME=/usr/local/etc/perldoc
+
+#  ln -s $HOME/init.rc perldoc
+#
+
+SERVICE=perldoc
+
+. /etc/init.d/functions
+
+PATH=$PATH:/usr/local/bin:/usr/local/sbin
+PIDFILE=/var/run/$SERVICE.pid
+
+exec=/usr/local/bin/plackup
+prog=plackup
+
+PORT="--port 8082"
+HOST="--host localhost"
+APP="--path /perldoc/ --app $HOME/app.psgi"
+
+OPTIONS="$HOST $PORT $APP"
+
+my-start-stop-daemon() {
+	start-stop-daemon --quiet --pidfile "$PIDFILE" $*
+	local rc=$?
+	if [ $rc -eq 0 ]; then
+	    echo_success
+	else
+	    echo_failure
+	fi
+	return $rc
+}
+
+start() {
+	[ -f $PIDFILE ] && stop
+	echo -n "Starting $SERVICE: "
+	my-start-stop-daemon -b -m --start --exec $exec -- $OPTIONS
+	RETVAL=$?
+        echo
+        return $RETVAL
+}	
+
+stop() {
+	echo -n "Shutting down $SERVICE: "
+	my-start-stop-daemon --stop --signal TERM
+	RETVAL=$?
+	echo
+        [ $RETVAL -eq 0 ] && rm -f $PIDFILE
+        return $RETVAL
+}
+
+rhstatus() {
+        status -p "$PIDFILE" -l $prog $exec
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart)
+	stop
+	start
+	;;
+    status)
+	rhstatus
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart|status}"
+	exit 1
+	;;
+esac
+exit $?

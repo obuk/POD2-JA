@@ -44,13 +44,12 @@ my $app = sub {
 
 		my $url_scheme = $env->{'psgi.url_scheme'};
 		my ($host, $port) = ($env->{SERVER_NAME}, $env->{SERVER_PORT});
-		DEBUG and warn "SERVER = $url_scheme://$host:$port\n";
+		my $script_name = $env->{SCRIPT_NAME};
+		DEBUG and warn "SERVER = $url_scheme://$host:$port$script_name\n";
 		$p->perldoc_url_prefix('');
 
-		$p->man_url_prefix('https://www.obuk.org/man');
-		# $p->man_url_prefix("$url_scheme://$host/man");
-
-		$p->html_css($css);
+		$p->man_url_prefix('/man');
+		$p->html_css("$script_name$css");
 		$p->no_errata_section(1);
 		$p->complain_stderr(1);
 		$p->index(1);
