@@ -2,11 +2,11 @@
 
 =head1 NAME
 
-perldoc.psgi - perldoc -L JA web server
+perldoc/app.psgi - perldoc -L JA web server
 
 =head1 SYNOPSIS
 
-    $ plackup -a perldoc.psgi
+    $ plackup -a perldoc/app.psgi
 
 =cut
 
