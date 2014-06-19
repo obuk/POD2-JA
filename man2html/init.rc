@@ -1,10 +1,18 @@
 #!/bin/bash
 #
-#  cd /etc/init.d
-#  ln -s /usr/local/man2html/init.rc man2html
+# chkconfig: - 85 15
+# description: man2html server
+# processname: man2html
+# pidfile: /var/run/man2html.pid
 #
+### BEGIN INIT INFO
+# Provides: man2html
+# Required-Start: $httpd
+# Required-Stop: $local_fs $remote_fs $network $httpd
+### END INIT INFO
 
 SERVICE=man2html
+HOME=/usr/local/etc/man2html
 
 . /etc/init.d/functions
 
@@ -16,8 +24,7 @@ prog=plackup
 
 PORT="--port 8081"
 HOST="--host localhost"
-APPDIR=/usr/local/etc/man2html
-APP="--app $APPDIR/app.psgi"
+APP="--app $HOME/app.psgi"
 
 OPTIONS="$HOST $PORT $APP"
 

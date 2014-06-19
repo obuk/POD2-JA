@@ -1,13 +1,18 @@
 #!/bin/bash
 #
-#  cd /etc/init.d
-
-HOME=/usr/local/etc/perldoc
-
-#  ln -s $HOME/init.rc perldoc
+# chkconfig: - 85 15
+# description: perldoc server
+# processname: perldoc
+# pidfile: /var/run/perldoc.pid
 #
+### BEGIN INIT INFO
+# Provides: perldoc
+# Required-Start: $httpd
+# Required-Stop: $local_fs $remote_fs $network $httpd
+### END INIT INFO
 
 SERVICE=perldoc
+HOME=/usr/local/etc/perldoc
 
 . /etc/init.d/functions
 
