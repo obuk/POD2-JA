@@ -90,14 +90,14 @@ H1 {
     background: transparent;
     color: #006699;
     // font-size: x-large;
-    // font-family: tahoma,sans-serif;
+    font-family: tahoma,sans-serif;
 }
 
 H2 {
     background: transparent;
     color: #006699;
     // font-size: large;
-    // font-family: tahoma,sans-serif;
+    font-family: tahoma,sans-serif;
 }
 
 HR {

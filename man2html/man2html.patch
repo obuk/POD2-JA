@@ -1,0 +1,42 @@
+*** ./man2html	1997-08-13 02:19:18.000000000 +0900
+--- /usr/local/bin/man2html	2014-06-19 12:55:52.016350702 +0900
+***************
+*** 47,54 ****
+  $InFH	= \*STDIN   unless $InFH;
+  $OutFH	= \*STDOUT  unless $OutFH;
+  
+  ## Backspace character:  Used in overstriking detection
+! *bs = \"\b";
+  
+  ##	Hash of section titles and their HTML tag wrapper.
+  ##	This list allows customization of what HTML tag is used for
+--- 48,59 ----
+  $InFH	= \*STDIN   unless $InFH;
+  $OutFH	= \*STDOUT  unless $OutFH;
+  
++ use Encode::Locale qw(decode_argv);
++ binmode $InFH, ":encoding(console_in)";
++ binmode $OutFH, ":encoding(console_out)";
++ 
+  ## Backspace character:  Used in overstriking detection
+! *bs = \ "\b";
+  
+  ##	Hash of section titles and their HTML tag wrapper.
+  ##	This list allows customization of what HTML tag is used for
+***************
+*** 203,209 ****
+  
+  	    $secth = 0;
+  	    ## Check for strong text and headings
+! 	    if ($Sun || /.\010./o) {
+  		if (!$NoHeads) {
+  		    $line =~ s/.\010//go;
+  		    $tmp = $HeadFallback;
+--- 208,214 ----
+  
+  	    $secth = 0;
+  	    ## Check for strong text and headings
+! 	    if ($Sun || /.\010./o || /^[^\x00-\xff]/) {
+  		if (!$NoHeads) {
+  		    $line =~ s/.\010//go;
+  		    $tmp = $HeadFallback;
