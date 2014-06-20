@@ -16,7 +16,7 @@ HOME=/usr/local/etc/perldoc
 
 . /etc/init.d/functions
 
-PATH=$PATH:/usr/local/bin:/usr/local/sbin
+PATH=/usr/local/bin:/usr/local/sbin:$PATH
 PIDFILE=/var/run/$SERVICE.pid
 
 exec=/usr/local/bin/plackup

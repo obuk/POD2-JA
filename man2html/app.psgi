@@ -43,7 +43,7 @@ my $app = sub {
 	} elsif ($path_info =~ m{^/man(\d\w*)/(.*)}) {
 		my ($section, $topic, $TOPIC) = ($1, $2, uc $2);
 		local $ENV{LANG} = 'ja_JP.UTF-8'; my $stderr = "/tmp/man$$.err";
-		my @man2html = ('man2html', '-bare');
+		my @man2html = ('man2html', '--bare');
 		push(@man2html, '--nodepage') if $^O eq 'linux';
 		(my $manpage = `man $section $topic 2>$stderr | @man2html -`) =~
 			s{<B>([^\(<]+)\((\d[^\)<]*)\)</B>}{<a href="/man$2/$1">$&</a>}g;

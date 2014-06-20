@@ -16,7 +16,7 @@ HOME=/usr/local/etc/man2html
 
 . /etc/init.d/functions
 
-PATH=$PATH:/usr/local/bin:/usr/local/sbin
+PATH=/usr/local/bin:/usr/local/sbin:$PATH
 PIDFILE=/var/run/$SERVICE.pid
 
 exec=/usr/local/bin/plackup
@@ -27,12 +27,6 @@ HOST="--host localhost"
 APP="--app $HOME/app.psgi"
 
 OPTIONS="$HOST $PORT $APP"
-
-export LINKBASE=/perldoc/
-export MAN=/man
-export POD2=JA
-export PERLDOC=/usr/local/bin/perlfind
-
 
 my-start-stop-daemon() {
 	start-stop-daemon --quiet --pidfile "$PIDFILE" $*
