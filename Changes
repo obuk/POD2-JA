@@ -4,4 +4,13 @@ Git Log:
 2014-06-07 - initial (thanks POD2::IT, perldoc.jp)
 2014-06-07 = TAG: 0.16
 2014-06-08 - adds perldoc server
-2014-06-09 - TAG: 0.16
+2014-06-11 - fixes error termination
+2014-06-17 - adds httpd proxy
+2014-06-17 - adds man2html, init.rc
+2014-06-17 - adds man2html.css
+2014-06-19 - adds chkconfig info into init.rc
+2014-06-19 - fixes encoding
+2014-06-20 - fixes PATH
+2014-06-21 - fixes open() leaks filehandles (see Special Literals in perldata)
+2014-06-21 = TAG: 0.17
+
