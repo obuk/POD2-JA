@@ -18,20 +18,21 @@ my %pod;
 	close(STDOUT);
 	open(FILE, "<$tmp");
 	while (<FILE>) {
-		/^\s+'(\w+)' translated from Perl (\S+)/;
-		$pod{$1} = $2;
+		/^\s+'(\S+)' translated from Perl (\S+)/ and $pod{$1} = $2;
 	}
 	close(FILE);
 	unlink($tmp);
 }
 
 for (keys %pod) {
-	ok(-f "$t/../JA/$_.pod", "-f $_.pod");
+	(my $f = $_) =~ s/::/\//g;
+	ok(-f "$t/../JA/$f.pod", "-f $f.pod");
 }
 
-for (map { (split('/'))[-1] } glob("$t/../JA/*.pod")) {
-	/\w+/;
-	my $f = $&;
+for (map { (split('/'))[-1] } glob("$t/../JA/perl*.pod")) {
+	(my $f = $_) =~ s/\.pod$//;
+	$pod{$f} or diag($f), next;
+	$pod{$f} =~ /^5\./ or diag($f), next;
 	ok($pod{$f}, "print_pod($f)");
 }
 

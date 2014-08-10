@@ -80,7 +80,7 @@ sub print_pod {
 	my @args = @_ ? @_ : @ARGV;
 
 	while (@args) {
-		(my $pod = lc(shift @args)) =~ s/\.pod$//;
+		(my $pod = shift @args) =~ s/\.pod$//;
 		if ( exists $pods->{$pod} ) {
 			print "\t'$pod' translated from Perl $pods->{$pod}\n";
 		}
@@ -97,24 +97,15 @@ perl	5.16.1
 perl5100delta	5.12.1
 perl5101delta	5.12.1
 perl5120delta	5.12.1
-perl5121delta	5.12.1
-perl5122delta	5.12.2
 perl5123delta	5.12.3
 perl5124delta	5.12.4
-perl5125delta	5.12.5
-perl5140delta	5.14.0
-perl5141delta	5.14.1
 perl5142delta	5.14.2
 perl5143delta	5.14.3
-perl5144delta	5.14.4
 perl5160delta	5.16.0
 perl5161delta	5.16.1
 perl5162delta	5.16.2
-perl5163delta	5.16.3
 perl5180delta	5.18.0
-perl5181delta	5.18.1
 perl5182delta	5.18.2
-perl5200delta	5.20.0
 perl581delta	5.10.0
 perl582delta	5.10.0
 perl583delta	5.10.0
@@ -122,9 +113,7 @@ perl584delta	5.10.0
 perl585delta	5.10.0
 perl586delta	5.10.0
 perl587delta	5.10.0
-perl588delta	5.10.0
 perl58delta	5.10.0
-perl595delta	5.10.0
 perlapi	5.12.1
 perlapio	5.18.1
 perlbook	5.18.1
@@ -135,12 +124,13 @@ perlcheat	5.18.1
 perlclib	5.18.1
 perlcommunity	5.18.1
 perlcompile	5.14.1
+perld595elta	5.10.0
 perldata	5.18.1
 perldbmfilter	5.18.1
 perldebguts	5.10.1
 perldebtut	5.18.1
 perldebug	5.18.1
-perldelta	5.8.1-RC2
+perldelta	5.20.0
 perldiag	5.18.1
 perldoc	5.12.1
 perldsc	5.18.1
@@ -167,7 +157,7 @@ perlintro	5.18.1
 perliol	5.10.1
 perlipc	5.18.1
 perllexwarn	5.18.1
-perllocale	5.16.1
+perllocale	5.18.1
 perllol	5.18.1
 perlmod	5.18.1
 perlmodlib	5.10.1
