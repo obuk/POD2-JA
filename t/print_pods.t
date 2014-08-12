@@ -2,37 +2,41 @@
 
 use strict;
 use warnings;
-use Test::More qw(no_plan);
-# use Test::More tests => 237;
-BEGIN { use_ok('POD2::JA', qw(print_pods)) }
+use Test::More;
+BEGIN { use_ok('POD2::JA', qw(print_pods pod_dirs)) }
+use IO::File;
 use File::Basename;
 
-my $t = dirname($0);
+my $dir = pod_dirs();
+ok(-d $dir, "-d $dir");
+
 my %pod;
 
+my @unexpected;
+
 {
-	local *STDOUT;
-	my $tmp = "$t/../test.tmp";
-	open(STDOUT, ">$tmp");
+	local *STDOUT = IO::File->new_tmpfile;
 	print_pods();
-	close(STDOUT);
-	open(FILE, "<$tmp");
-	while (<FILE>) {
-		/^\s+'(\S+)' translated from Perl (\S+)/ and $pod{$1} = $2;
+	seek STDOUT, 0, 0;
+	while (<STDOUT>) {
+		if (/^\s+'(\S+)' translated from Perl (\S+)$/) {
+			$pod{$1} = $2;
+		} elsif (/^\s+'(\S+)' doesn\'t yet exists$/) {
+			;
+		} else {
+			push(@unexpected, $_);
+		}
 	}
-	close(FILE);
-	unlink($tmp);
 }
+
+ok(@unexpected == 0);
 
 for (keys %pod) {
 	(my $f = $_) =~ s/::/\//g;
-	ok(-f "$t/../JA/$f.pod", "-f $f.pod");
+	ok(-f "$dir/$f.pod", "-f $dir/$f.pod");
 }
 
-for (map { (split('/'))[-1] } glob("$t/../JA/perl*.pod")) {
-	(my $f = $_) =~ s/\.pod$//;
-	$pod{$f} or diag($f), next;
-	$pod{$f} =~ /^5\./ or diag($f), next;
-	ok($pod{$f}, "print_pod($f)");
-}
+diag($_) for (grep { !($pod{$_} && $pod{$_} =~ /^v?5\./) }
+			  map basename($_, '.pod'), glob "$dir/perl*.pod");
 
+done_testing();

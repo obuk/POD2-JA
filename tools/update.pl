@@ -17,44 +17,63 @@ use utf8;
 use Encode;
 use File::Find;
 use File::Basename;
+use version;
 
-my $DEBUG = $ENV{DEBUG} || 0;
+BEGIN {
+    my $debug = $ENV{DEBUG} || 0;
+    eval "sub DEBUG { $debug }";
+}
+
+my %name_fixes = (perlXStut => 'perlxstut');
+my $re_version = qr/\d+\.\d+(?:[._-]\d+)*$/;
+my %version;
 my %pod;
 
-for (
-    glob(join(' ', glob "docs/perl/*")),
-    glob("docs/modules/*"),
-    glob("module-pod-jp/docs/modules/*"),
-    ) {
-    /\d+(\.\d+)+(?:-RC\d+)?$/ and my $v = $& or next;
-    find(sub {
-	if (/\.pod$/) {
-	    my $name;
-	    if (open my $fd, "<", $_) {
-		my $head;
-		while (<$fd>) {
-		    /^=encoding\s+(\S+)/ and binmode $fd, ":encoding($1)";
-		    /^=head1\s+(\S+)/ and $head = $1;
-		    next unless $head && $head =~ /^(NAME|名前)$/;
-		    /(\S+)\s+-+\s+/ and $name = $1, last;
-		}
-		close $fd;
-	    }
-	    if ($name) {
-		$name =~ s/B<([^>]+)>/$1/;
-		$name = lc($name) if $name =~ /^perl/;
-	    }
-	    if ($name) {
-		if ($name =~ /[<>.]/) {
-		    warn "skip $name $File::Find::name\n";
+find({ wanted => \&pod_to_put_pod2ja, no_chdir => 1 },
+     glob("docs/perl/*"), glob("docs/modules/*"),
+     glob("module-pod-jp/docs/modules/*"),
+    );
+
+sub pod_to_put_pod2ja {
+    return unless /\.pod$/;
+    my ($file, $topdir) = ($_, $File::Find::topdir);
+    my ($name, $status) = get_pod_name_status($file);
+    my $v = $version{$topdir} ||=
+	version->parse($topdir =~ /($re_version)/) ||
+	version->parse("0.0");
+    if ($file =~ /\/perl/ && $v->normal =~ /^v5\.\d*[13579]\./) {
+	$status = 'odd';
+    }
+    if ($status && $status !~ /complete/) {
+	DEBUG and warn "ignore $file; status is $status\n";
+    } elsif ($name) {
+	$pod{$name}{$file} = $v;
+    } else {
+	DEBUG and warn "can't get NAME $file\n";
+    }
+}
+
+sub get_pod_name_status {
+    my $file = shift; my ($name, $status); my $head; 
+    if (open my $fd, "<", $file) {
+	while (<$fd>) {
+	    /^=encoding\s+(\S+)/ and binmode($fd, ":encoding($1)");
+	    if (/^=head\d\s+(\S+)/) {
+		$head = $1 =~ /^(NAME|名前)$/;
+	    } elsif ($head && /^(\S+)\s+-+\s+/) {
+		(my $x = $1) =~ s/[BC]<([^>]+)>/$1/g; # XXXXX
+		if ($x =~ /^[a-zA-Z]\w*((::|-)[a-zA-Z]\w*)*$/) {
+		    $name = $name_fixes{$x} || $x;
 		} else {
-		    $name =~ s/-/::/g;
-		    $pod{$name}{$v} = $File::Find::name;
+		    DEBUG and warn "skip $x at $file line $..\n";
 		}
-	    } else {
-		warn "can't parse $File::Find::name\n";
 	    }
-	}}, $_);
+	    if (/^=begin\s+meta/ ... /^=end\s+meta/) {
+		$status = $1 if /^Status:\s*(\S+)/i;
+	    }
+	}
+    }
+    ($name, $status);
 }
 
 if (@ARGV) {
@@ -67,30 +86,17 @@ if (@ARGV) {
 
 my $JA = 'JA';
 -d $JA or mkdir $JA;
-for my $x (sort keys %pod) {
-    my %v; $v{$_} = version($_) for keys %{$pod{$x}};
-    my @v = sort { $v{$a} cmp $v{$b} } keys %{$pod{$x}};
-    my $s = $pod{$x}{$v[-1]};
-    my $d = join('/', $JA, split('::', "$x.pod"));
-    copy_pod($s, $d);
-    print "$x\t$v[-1]\n" if $x =~ /^perl/ && $v[-1] =~ /^5\./ || $DEBUG;
-    if (@v >= 2) {
-	if ($DEBUG >= 2) {
-	    print "#\t$_\t$v{$_}\t$pod{$x}{$_}\n" for reverse @v;
-	} elsif ($DEBUG) {
-	    print "#\t$_\t$pod{$x}{$_}\n" for reverse @v;
-	}
+for my $name (sort keys %pod) {
+    my %v = %{$pod{$name}};
+    my ($path) = sort { $v{$b} <=> $v{$a} } keys %v;
+    copy_pod($path, join('/', $JA, split('::', "$name.pod")));
+    if ($name =~ /^perl/ && $v{$path}->normal =~ /^v5\./) {
+	# print join("\t", $name, $v{$path}->normal), "\n";
+	print join("\t", $name, $v{$path}->stringify), "\n";
     }
 }
 
 exit 0;
-
-sub version {
-    my $v = shift;
-    $v =~ s/\.\d{4,}/join('.', substr($&, 0, 3), substr($&, 3))/e;
-    $v =~ s/(\d+)([-._])RC(\d+)/($1 > 0? $1 - 1 : '').$2.'999.'.$3/e;
-    join('.', map { sprintf "%4s", $_ } split(/[-._]/, $v));
-}
 
 sub copy_pod {
     my ($s, $d) = @_;

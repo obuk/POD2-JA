@@ -49,7 +49,7 @@ use vars qw($VERSION);
 $VERSION = '0.17';
 
 use base qw(Exporter);
-our @EXPORT = qw(print_pod print_pods search_perlfunc_re new pod_dirs);
+our @EXPORT = qw(print_pod print_pods new pod_dirs);
 
 my $pods = { };
 
@@ -97,15 +97,22 @@ perl	5.16.1
 perl5100delta	5.12.1
 perl5101delta	5.12.1
 perl5120delta	5.12.1
+perl5121delta	5.12.1
+perl5122delta	5.12.2
 perl5123delta	5.12.3
 perl5124delta	5.12.4
+perl5125delta	5.12.5
 perl5142delta	5.14.2
 perl5143delta	5.14.3
+perl5144delta	5.14.4
 perl5160delta	5.16.0
 perl5161delta	5.16.1
 perl5162delta	5.16.2
+perl5163delta	5.16.3
 perl5180delta	5.18.0
+perl5181delta	5.18.1
 perl5182delta	5.18.2
+perl5200delta	5.20.0
 perl581delta	5.10.0
 perl582delta	5.10.0
 perl583delta	5.10.0
@@ -113,6 +120,7 @@ perl584delta	5.10.0
 perl585delta	5.10.0
 perl586delta	5.10.0
 perl587delta	5.10.0
+perl588delta	5.10.0
 perl58delta	5.10.0
 perlapi	5.12.1
 perlapio	5.18.1
@@ -127,11 +135,10 @@ perlcompile	5.14.1
 perld595elta	5.10.0
 perldata	5.18.1
 perldbmfilter	5.18.1
-perldebguts	5.10.1
 perldebtut	5.18.1
 perldebug	5.18.1
-perldelta	5.20.0
-perldiag	5.18.1
+perldelta	5.14.1
+perldiag	5.16.1
 perldoc	5.12.1
 perldsc	5.18.1
 perlembed	5.18.1
@@ -148,19 +155,17 @@ perlfaq9	5.14.1
 perlfilter	5.18.1
 perlfork	5.18.1
 perlform	5.18.1
-perlfunc	5.18.1
+perlfunc	5.14.1
 perlglossary	5.10.0
-perlguts	5.14.1
-perlhack	5.10.1
+perlguts	5.12.1
 perlhist	5.18.1
 perlintro	5.18.1
-perliol	5.10.1
 perlipc	5.18.1
 perllexwarn	5.18.1
 perllocale	5.18.1
 perllol	5.18.1
 perlmod	5.18.1
-perlmodlib	5.10.1
+perlmodlib	5.10.0
 perlmodstyle	5.18.1
 perlmroapi	5.18.1
 perlnewmod	5.18.1
@@ -175,18 +180,16 @@ perlpod	5.18.1
 perlpodspec	5.18.1
 perlport	5.18.1
 perlpragma	5.18.1
-perlre	5.14.1
-perlreapi	5.10.1
+perlre	5.12.1
 perlrebackslash	5.18.1
-perlrecharclass	5.14.1
+perlrecharclass	5.12.1
 perlref	5.18.1
 perlreftut	5.18.1
-perlrepository	5.10.1
 perlrequick	5.18.1
 perlreref	5.18.1
 perlretut	5.18.1
-perlrun	5.18.1
-perlsec	5.18.1
+perlrun	5.16.1
+perlsec	5.16.1
 perlstyle	5.18.1
 perlsub	5.18.1
 perlsyn	5.18.1
@@ -195,7 +198,7 @@ perltie	5.18.1
 perltooc	5.14.1
 perltoot	5.14.1
 perltrap	5.18.1
-perlunicode	5.12.1
+perlunicode	5.10.1
 perlunifaq	5.18.1
 perluniintro	5.18.1
 perlunitut	5.18.1
@@ -203,4 +206,3 @@ perlutil	5.18.1
 perlvar	5.18.1
 perlxs	5.18.1
 perlxstut	5.18.1
-perlxstypemap	5.16.1
