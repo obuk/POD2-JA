@@ -1,11 +1,13 @@
 # -*- mode: perl -*-
 
+use 5.010;
 use ExtUtils::MakeMaker;
 
 my $perldocjp = ':pserver:anonymous@cvs.sourceforge.jp:/cvsroot/perldocjp';
 my $docs = 'docs';
 
 -d $docs or system('cvs', '-d', $perldocjp, 'co', $docs);
+# $ENV{POD2JA_SEARCH_DIRS} = 'module-pod-jp/docs/modules/*:local/*';
 system(qw(perl -i.bak ./tools/update.pl JA.pm));
 
 WriteMakefile(

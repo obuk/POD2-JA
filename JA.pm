@@ -46,7 +46,7 @@ package POD2::JA;
 use 5.010;
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.17';
+$VERSION = '0.18';
 
 use base qw(Exporter);
 our @EXPORT = qw(print_pod print_pods new pod_dirs);

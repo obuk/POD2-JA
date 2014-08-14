@@ -1,4 +1,4 @@
-POD2::JA version 0.16
+POD2::JA version 0.18
 =====================
 
 POD2::JA - uses perldoc -L JA
@@ -9,15 +9,11 @@ INSTALLATION
 
 To install this module type the following:
 
+   cvs -d :pserver:anonymous@cvs.sourceforge.jp:/cvsroot/perldocjp docs
    perl Makefile.PL
    make
    make test
    make install
-
-DEPENDENCIES
-------------
-
-  cvs -d :pserver:anonymous@cvs.sourceforge.jp:/cvsroot/perldocjp
 
 
 COPYRIGHT AND LICENCE

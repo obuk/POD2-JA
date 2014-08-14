@@ -29,10 +29,11 @@ my $re_version = qr/\d+\.\d+(?:[._-]\d+)*$/;
 my %version;
 my %pod;
 
+my @search_dir = split /:/, "docs/perl/*:docs/modules/*";
+push @search_dir, split /:/, $ENV{POD2JA_SEARCH_DIRS} || '';
+
 find({ wanted => \&pod_to_put_pod2ja, no_chdir => 1 },
-     glob("docs/perl/*"), glob("docs/modules/*"),
-     glob("module-pod-jp/docs/modules/*"),
-    );
+     map { glob $_ } @search_dir);
 
 sub pod_to_put_pod2ja {
     return unless /\.pod$/;

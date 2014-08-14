@@ -13,4 +13,8 @@ Git Log:
 2014-06-20 - fixes PATH
 2014-06-21 - fixes open() leaks filehandles (see Special Literals in perldata)
 2014-06-21 = TAG: 0.17
-
+2014-08-10 - Merge pull request #4 from obuk/pod-more
+2014-08-10 - adds pod files more
+2014-08-13 - checks translation status is completed
+2014-08-14 - adds search dirs POD2JA_SEARCH_DIRS
+2014-08-14 = TAG: 0.18

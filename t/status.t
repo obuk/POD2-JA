@@ -1,4 +1,4 @@
-# -*- mode: perl; coding: utf-8; tab-width: 4 -*-
+# -*- mode: perl -*-
 
 use strict;
 use warnings;
@@ -7,7 +7,6 @@ BEGIN { use_ok('POD2::JA', qw(print_pods pod_dirs)) }
 
 use File::Find;
 use Encode;
-# use File::Slurp;
 
 find(\&check_pod_status, pod_dirs());
 
