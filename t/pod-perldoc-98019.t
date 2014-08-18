@@ -27,7 +27,7 @@ for my $t (
     ) {
     open my $fd, "-|:encoding(utf8)", @{$t->{run}};
     my @match = grep(/$t->{expected}/, <$fd>);
-    ok(@match + 0, "@{$t->{run}}/");
+    ok(@match + 0, "@{$t->{run}}");
 }
 
 done_testing();
