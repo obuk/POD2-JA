@@ -17,6 +17,15 @@ POD2::JA - Use perldoc -L JA
     $ perl -MPOD2::JA -e print_pods
     $ perl -MPOD2::JA -e print_pod <podname1> <podname2> ...
 
+to borrow the formatter from L<Pod::PerldocJp>.
+
+    $ export PERLDOC='-L ja -M Pod::PerldocJp::ToText'
+    $ perldoc perldoc
+    $ perldoc perldocjp
+
+you can get along with other programs (e.g. L<cpandoc|Pod::Cpandoc>,
+L<perlfind|App::perlfind>)
+
 =head1 DESCRIPTION
 
 Enjoy pods in Japanese.
@@ -25,6 +34,8 @@ Enjoy pods in Japanese.
 =head1 SEE ALSO
 
 L<POD2::IT>
+
+L<Pod::PerldocJp>
 
 
 =head1 AUTHOR
