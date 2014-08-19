@@ -19,6 +19,7 @@ use File::Find;
 use File::Basename;
 use File::Spec::Functions;
 use File::Path qw(make_path);
+use File::Copy qw(cp);
 use version;
 
 BEGIN {
@@ -80,23 +81,24 @@ exit 0;
 sub setup_pod {
     my %cf = @_; %pod = ();
     (my $JA = $cf{pod_dir} || $pod2ja_default_dir) =~ s/^~/$ENV{HOME}/;
-    # warn $cf{find_dir}, "\n";
     find({ wanted => \&check_pod, no_chdir => 1 },
 	 map { glob catdir($_, '*') } $cf{find_dir});
-    # -d $JA or mkdir $JA;
     for my $name (sort keys %pod) {
 	my %v = %{$pod{$name}};
 	my @v;
 	if ($cf{search_dir}) {
 	    while (my ($s, $v) = each %v) {
 		my $d = catfile $JA, $v->stringify, split('::', "$name.pod");
-		copy_pod($s, $d);
+		make_path(dirname $d);
+		cp($s, $d);
 	    }
 	    @v = sort { $b <=> $a } values %v;
 	} else {
-	    my ($path) = sort { $v{$b} <=> $v{$a} } keys %v;
-	    copy_pod($path, catfile $JA, split('::', "$name.pod"));
-	    @v = ($v{$path});
+	    my ($s) = sort { $v{$b} <=> $v{$a} } keys %v;
+	    my $d = catfile $JA, split('::', "$name.pod");
+	    make_path(dirname $d);
+	    cp($s, $d);
+	    @v = ($v{$s});
 	}
 	if ($name =~ /^perl/ && $v[0]->normal =~ /^v5\./) {
 	    print join("\t", $name, map $_->stringify, @v), "\n";
@@ -142,17 +144,4 @@ sub get_pod_name_status {
 	}
     }
     ($name, $status);
-}
-
-sub copy_pod {
-    my ($s, $d) = @_;
-    my $dir = dirname $d;
-    -d $dir or make_path($dir);
-    open(my $dd, '>', $d) or die "$0: can't open '$d'\n";
-    open(my $sd, '<', $s) or die "$0: can't open '$s'\n";
-    while (<$sd>) {
-	chomp;
-	s/^(=encoding\s+)(\S+)/${1}utf8/ and binmode($sd, ":encoding($2)");
-	print $dd encode_utf8($_), "\n";
-    }
 }

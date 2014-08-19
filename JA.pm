@@ -61,8 +61,9 @@ our $VERSION = '0.19';
 use Exporter;
 our @EXPORT_OK = qw(print_pod print_pods search_perlfunc_re new pod_dirs);
 
-use File::Spec ();
 use POD2::Base;
+use File::Spec::Functions;
+
 our @ISA = qw( Exporter POD2::Base );
 our $RE_VERSION = qr/\d+\.\d+(?:[._-]\d+)*$/;
 
@@ -102,9 +103,8 @@ sub pod_dirs {
 	my $self = shift || _new();
     my @candidates = $self->SUPER::pod_dirs(@_);
 	unless (@candidates) {
-		@candidates = map {
-			grep /$RE_VERSION/, glob File::Spec->catdir($_, '*')
-		} $self->_lib_dirs;
+		@candidates = map {	grep /$RE_VERSION/, glob catdir($_, '*') }
+		$self->_lib_dirs;
 	}
 	( my $mod = __PACKAGE__ . '.pm' ) =~ s|::|/|g;
 	( my $dir = $INC{$mod} ) =~ s/\.pm\z//;
