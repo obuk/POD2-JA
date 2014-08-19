@@ -3,12 +3,23 @@
 use strict;
 use warnings;
 use Test::More;
-BEGIN { use_ok('POD2::JA', qw(print_pods pod_dirs)) }
+
+our $POD2_SEARCH_DIRS;
+
+BEGIN {
+	$POD2_SEARCH_DIRS = $ENV{POD2JA_SEARCH_DIRS};
+	delete $ENV{POD2JA_SEARCH_DIRS};
+	use_ok('POD2::JA', qw(print_pods pod_dirs))
+}
+
 use IO::File;
-use File::Basename;
+use File::Spec::Functions;
 
 my $dir = pod_dirs();
-ok(-d $dir, "-d $dir");
+ok($dir);
+unless ($POD2_SEARCH_DIRS) {
+	ok(-d $dir, "-d $dir");
+}
 
 my %pod;
 
@@ -31,12 +42,11 @@ my @unexpected;
 
 ok(@unexpected == 0);
 
-for (keys %pod) {
-	(my $f = $_) =~ s/::/\//g;
-	ok(-f "$dir/$f.pod", "-f $dir/$f.pod");
+unless ($POD2_SEARCH_DIRS) {
+	for (keys %pod) {
+		my $f = catfile(split '::' );
+		ok(-f catfile($dir, "$f.pod"), "-f $dir/$f.pod");
+	}
 }
-
-diag($_) for (grep { !($pod{$_} && $pod{$_} =~ /^v?5\./) }
-			  map basename($_, '.pod'), glob "$dir/perl*.pod");
 
 done_testing();

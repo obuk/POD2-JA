@@ -5,7 +5,17 @@ use warnings;
 use utf8;
 use open ':std', ':encoding(utf8)';
 use Test::More;
-BEGIN { use_ok('POD2::JA') }
+
+our $POD2JA_SEARCH_DIRS;
+
+BEGIN {
+    if (my $search_dir = $ENV{POD2JA_SEARCH_DIRS}) {
+	my @dir = split ':', $search_dir;
+	my @pod = `find @dir -name '*pod'`;
+	plan skip_all => "no POD2::JA" unless @pod;
+    }
+    use_ok('POD2::JA');
+}
 
 #  perldoc -L JA -u -f 'scalar'    # ok
 #  perldoc -L JA -u -a 'SvPV'      # ok

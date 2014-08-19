@@ -6,6 +6,6 @@ pm_to_blib
 *~
 *.bak
 *.old
-docs/
 JA/
+jprp-docs/
 module-pod-jp/
