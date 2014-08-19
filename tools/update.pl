@@ -17,6 +17,8 @@ use utf8;
 use Encode;
 use File::Find;
 use File::Basename;
+use File::Spec::Functions;
+use File::Path qw(make_path);
 use version;
 
 BEGIN {
@@ -24,31 +26,96 @@ BEGIN {
     eval "sub DEBUG { $debug }";
 }
 
+use Getopt::Long qw(:config no_ignore_case);
+use File::Spec::Functions;
+
+my $pod2ja_default_dir = 'JA';
+my %search_dir = ();
+my @pod_dir = ();
+
+my $perl_default_dir = catdir qw(jprp-docs perl);
+my $modules_default_dir = catdir qw(jprp-docs modules);
+
+GetOptions(
+    "perl-dir=s" => \%search_dir,
+    "module-dir=s" => \@pod_dir,
+    ) or die <<"----";
+usage: $0 --perl-dir $perl_default_dir=~/perl5/pod/POD2/POD2/JA
+    --module-dir=$modules_default_dir
+----
+    ;
+
+unless (@pod_dir || %search_dir) {
+    if (my $dir = $ENV{POD2JA_SEARCH_DIRS}) {
+	%search_dir = ($perl_default_dir => $dir);
+    } else {
+	push @pod_dir, $perl_default_dir;
+    }
+    # push @pod_dir, $modules_default_dir;
+}
+
 my %name_fixes = (perlXStut => 'perlxstut');
 my $re_version = qr/\d+\.\d+(?:[._-]\d+)*$/;
 my %version;
 my %pod;
 
-my @search_dir = split /:/, "docs/perl/*:docs/modules/*";
-push @search_dir, split /:/, $ENV{POD2JA_SEARCH_DIRS} || '';
+if (@ARGV) {
+    while (<>) {
+	/__DATA__/ and last;
+	print;
+    }
+    print "__DATA__\n";
+}
 
-find({ wanted => \&pod_to_put_pod2ja, no_chdir => 1 },
-     map { glob $_ } @search_dir);
+# mkdirhier($pod2ja_default_dir);
+for my $find_dir (keys %search_dir) {
+    setup_pod(find_dir => $find_dir, pod_dir => $search_dir{$find_dir},
+	      search_dir => 1);
+}
 
-sub pod_to_put_pod2ja {
+setup_pod(find_dir => $_) for @pod_dir;
+
+exit 0;
+
+sub setup_pod {
+    my %cf = @_; %pod = ();
+    (my $JA = $cf{pod_dir} || $pod2ja_default_dir) =~ s/^~/$ENV{HOME}/;
+    # warn $cf{find_dir}, "\n";
+    find({ wanted => \&check_pod, no_chdir => 1 },
+	 map { glob catdir($_, '*') } $cf{find_dir});
+    # -d $JA or mkdir $JA;
+    for my $name (sort keys %pod) {
+	my %v = %{$pod{$name}};
+	my @v;
+	if ($cf{search_dir}) {
+	    while (my ($s, $v) = each %v) {
+		my $d = catfile $JA, $v->stringify, split('::', "$name.pod");
+		copy_pod($s, $d);
+	    }
+	    @v = sort { $b <=> $a } values %v;
+	} else {
+	    my ($path) = sort { $v{$b} <=> $v{$a} } keys %v;
+	    copy_pod($path, catfile $JA, split('::', "$name.pod"));
+	    @v = ($v{$path});
+	}
+	if ($name =~ /^perl/ && $v[0]->normal =~ /^v5\./) {
+	    print join("\t", $name, map $_->stringify, @v), "\n";
+	}
+    }
+}
+
+sub check_pod {
     return unless /\.pod$/;
     my ($file, $topdir) = ($_, $File::Find::topdir);
     my ($name, $status) = get_pod_name_status($file);
-    my $v = $version{$topdir} ||=
-	version->parse($topdir =~ /($re_version)/) ||
-	version->parse("0.0");
-    if ($file =~ /\/perl/ && $v->normal =~ /^v5\.\d*[13579]\./) {
+    my $v = $version{$topdir} ||= version->parse($topdir =~ /($re_version)/);
+    if ($file =~ /\/perl/ && $v && $v->normal =~ /^v5\.\d*[13579]\./) {
 	$status = 'odd';
     }
     if ($status && $status !~ /complete/) {
 	DEBUG and warn "ignore $file; status is $status\n";
     } elsif ($name) {
-	$pod{$name}{$file} = $v;
+	$pod{$name}{$file} = $v if $v;
     } else {
 	DEBUG and warn "can't get NAME $file\n";
     }
@@ -77,48 +144,15 @@ sub get_pod_name_status {
     ($name, $status);
 }
 
-if (@ARGV) {
-    while (<>) {
-	/__DATA__/ and last;
-	print;
-    }
-    print "__DATA__\n";
-}
-
-my $JA = 'JA';
--d $JA or mkdir $JA;
-for my $name (sort keys %pod) {
-    my %v = %{$pod{$name}};
-    my ($path) = sort { $v{$b} <=> $v{$a} } keys %v;
-    copy_pod($path, join('/', $JA, split('::', "$name.pod")));
-    if ($name =~ /^perl/ && $v{$path}->normal =~ /^v5\./) {
-	# print join("\t", $name, $v{$path}->normal), "\n";
-	print join("\t", $name, $v{$path}->stringify), "\n";
-    }
-}
-
-exit 0;
-
 sub copy_pod {
     my ($s, $d) = @_;
     my $dir = dirname $d;
-    -d $dir or mkdirhier($dir);
+    -d $dir or make_path($dir);
     open(my $dd, '>', $d) or die "$0: can't open '$d'\n";
     open(my $sd, '<', $s) or die "$0: can't open '$s'\n";
     while (<$sd>) {
 	chomp;
 	s/^(=encoding\s+)(\S+)/${1}utf8/ and binmode($sd, ":encoding($2)");
 	print $dd encode_utf8($_), "\n";
-    }
-}
-
-sub mkdirhier {
-    for (@_) {
-	my $dir;
-	for (split '/') {
-	    $dir .= $_;
-	    -d $dir or mkdir $dir;
-	    $dir .= '/';
-	}
     }
 }

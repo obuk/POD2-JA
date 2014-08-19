@@ -8,7 +8,7 @@ BEGIN { use_ok('POD2::JA', qw(print_pods pod_dirs)) }
 use File::Find;
 use Encode;
 
-find(\&check_pod_status, pod_dirs());
+find(\&check_pod_status, grep -d $_, pod_dirs());
 
 sub check_pod_status {
     if (/\.pod$/) {
