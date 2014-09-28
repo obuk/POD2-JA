@@ -1,5 +1,1 @@
-requires 'File::Basename';
-requires 'File::Find';
-requires 'File::Path';
-requires 'File::Spec::Functions';
-requires 'POD2::Base';
+requires 'POD2::Plus', '>= 0.09';
