@@ -2,7 +2,5 @@ Changes
 JA.pm
 Makefile.PL
 MANIFEST
-MANIFEST.SKIP
 README
-t/print_pods.t
-tools/update.pl
+t/POD2-JA.t

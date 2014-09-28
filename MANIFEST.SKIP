@@ -4,6 +4,7 @@ Makefile$
 \.png$
 \.tmp$
 ^JA/
+^MANIFEST\.SKIP
 ^MYMETA\.*
 ^\.git
 ^blib
