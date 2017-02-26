@@ -1,6 +1,7 @@
 Changes
+cpanfile
 JA.pm
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 README
 t/POD2-JA.t

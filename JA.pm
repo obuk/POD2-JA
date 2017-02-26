@@ -4,13 +4,9 @@
 
 =head1 NAME
 
-POD2::JA - Use perldoc -L JA
+POD2::JA - Japanese translation of Perl core documentation
 
 =head1 SYNOPSIS
-
-=head1 DESCRIPTION
-
-=head1 SEE ALSO
 
 =head1 AUTHOR
 
@@ -28,17 +24,15 @@ at your option, any later version of Perl 5 you may have available.
 
 package POD2::JA;
 
-use 5.010;
+use 5.006;
 use strict;
-our $VERSION = '0.20';
+our $VERSION = '0.22';
 
-use POD2::Plus;
-our @ISA = qw(POD2::Plus);
+use POD2::Base;
+our @ISA = qw(POD2::Base);
 
 sub search_perlfunc_re {
 	return 'Alphabetical Listing of Perl Functions';
 }
 
 1;
-
-__END__
